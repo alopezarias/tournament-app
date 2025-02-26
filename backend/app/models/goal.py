@@ -1,3 +1,4 @@
+# backend/app/models/goal.py
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from app.db.base_class import Base

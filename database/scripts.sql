@@ -23,7 +23,9 @@ CREATE TABLE teams (
 -- Tabla de Players (con campo de imagen en base64, llamado "image")
 CREATE TABLE players (
     id SERIAL PRIMARY KEY,
-    team_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    team_id INT REFERENCES teams(id) ON DELETE CASCADE,
+    username VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
     image TEXT, -- Imagen en formato base64
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

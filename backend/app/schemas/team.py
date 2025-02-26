@@ -1,3 +1,4 @@
+# backend/app/schemas/team.py
 from pydantic import BaseModel
 
 class TeamBase(BaseModel):

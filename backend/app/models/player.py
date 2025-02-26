@@ -1,3 +1,4 @@
+# backend/app/models/player.py
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from app.db.base_class import Base
@@ -6,7 +7,9 @@ class Player(Base):
     __tablename__ = "players"
 
     id = Column(Integer, primary_key=True, index=True)
-    team_id = Column(Integer, ForeignKey("teams.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    team_id = Column(Integer, ForeignKey("teams.id", ondelete="CASCADE"))
+    username = Column(String(100), unique=True, nullable=False)
     name = Column(String(100), nullable=False)
     image = Column(Text)  # Imagen en base64
     created_at = Column(DateTime(timezone=True), server_default=func.now())

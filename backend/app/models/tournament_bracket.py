@@ -1,3 +1,4 @@
+# backend/app/models/tournament_bracket.py
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, CheckConstraint
 from sqlalchemy.sql import func
 from app.db.base_class import Base

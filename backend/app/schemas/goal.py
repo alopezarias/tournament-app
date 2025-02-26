@@ -1,3 +1,4 @@
+# backend/app/schemas/goal.py
 from pydantic import BaseModel
 
 class GoalBase(BaseModel):

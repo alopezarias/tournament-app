@@ -1,3 +1,4 @@
+# backend/app/main.py
 from fastapi import FastAPI
 from app.controllers.auth_controller import router as auth_router
 from app.controllers.team_controller import router as team_router
