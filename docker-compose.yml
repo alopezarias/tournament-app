@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  #backend:
+  #  build: ./backend
+  #  container_name: torneo_backend
+  #  ports:
+  #    - "8000:8000"
+  #  environment:
+  #    - DATABASE_URL=postgresql://postgres:secret@db:5432/tournament
+  #    - JWT_SECRET=tu_secreto_super_seguro
+  #    # Otras variables de entorno necesarias
+  #  depends_on:
+  #    - db
+  #  volumes:
+  #    - ./backend:/app
+  #  restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: torneo_db
+    environment:
+      - POSTGRES_DB=tournament
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts.sql:/docker-entrypoint-initdb.d/scripts.sql:ro
+    ports:
+      - "5432:5432"
+    restart: always
+
+volumes:
+  postgres_data:

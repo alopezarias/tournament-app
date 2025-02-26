@@ -1,4 +1,3 @@
-# backend/app/schemas/team.py
 from pydantic import BaseModel
 
 class TeamBase(BaseModel):
@@ -7,6 +6,10 @@ class TeamBase(BaseModel):
 
 class TeamCreate(TeamBase):
     pass
+
+class TeamUpdate(BaseModel):
+    name: str | None = None
+    image: str | None = None
 
 class TeamOut(TeamBase):
     id: int

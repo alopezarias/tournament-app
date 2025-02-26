@@ -1,2 +1,7 @@
+*/.idea/*
 .idea/*
 .DS_Store
+*.pyc
+__pycache__/*
+*/__pycache/*
+backend/app/__pycache__/
