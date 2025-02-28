@@ -1,0 +1,752 @@
+{
+	"info": {
+		"_postman_id": "c60967fc-2d1d-4739-9898-5839622d48a5",
+		"name": "Torneo Futbolín API - Complete Protected Collection",
+		"description": "Esta colección contiene dos secciones: (1) Endpoints individuales protegidos y (2) un flujo de interacción completo que simula el registro de 4 players, creación de equipos, envío y aceptación de invitaciones, generación de partidos y actualización en vivo de goles. Todos los endpoints protegidos requieren el header 'Authorization: Bearer {{access_token}}'.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42550654"
+	},
+	"item": [
+		{
+			"name": "General Endpoints (Protected)",
+			"item": [
+				{
+					"name": "Login (Auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"player1@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal (Protected)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"match_id\": 1,\n  \"player_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/goals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"goals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal (Protected)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/goals/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"goals",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Invitation (Protected)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"team_id\": 1,\n  \"inviter_id\": 1,\n  \"invitee_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/invitations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"invitations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Match (Protected)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"team_a_id\": 1,\n  \"team_b_id\": 3,\n  \"score_team_a\": 0,\n  \"score_team_b\": 0,\n  \"match_date\": \"2025-02-22T10:00:00Z\",\n  \"start_time\": \"2025-02-22T10:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/matches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Match (set end_time) (Protected)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"end_time\": \"2025-02-22T10:45:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/matches/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"matches",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile (Protected)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Team (Protected)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Team Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/teams/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"teams",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Standard Flow Test Suite",
+			"item": [
+				{
+					"name": "Step 1: Register 4 Players",
+					"item": [
+						{
+							"name": "Register Player 1",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"player1@example.com\",\n  \"password\": \"password123\",\n  \"team_id\": null,\n  \"username\": \"player1\",\n  \"name\": \"Player One\",\n  \"image\": \"data:image/png;base64,PLAYER1_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Player 2",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"player2@example.com\",\n  \"password\": \"password123\",\n  \"team_id\": null,\n  \"username\": \"player2\",\n  \"name\": \"Player Two\",\n  \"image\": \"data:image/png;base64,PLAYER2_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Player 3",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"player3@example.com\",\n  \"password\": \"password123\",\n  \"team_id\": null,\n  \"username\": \"player3\",\n  \"name\": \"Player Three\",\n  \"image\": \"data:image/png;base64,PLAYER3_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Player 4",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"player4@example.com\",\n  \"password\": \"password123\",\n  \"team_id\": null,\n  \"username\": \"player4\",\n  \"name\": \"Player Four\",\n  \"image\": \"data:image/png;base64,PLAYER4_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Step 2: Two Players Create Teams",
+					"item": [
+						{
+							"name": "Player 1 Creates Team 1",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Team 1\",\n  \"image\": \"data:image/png;base64,TEAM1_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/teams",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"teams"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Player 3 Creates Team 3",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Team 3\",\n  \"image\": \"data:image/png;base64,TEAM3_IMAGE\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/teams",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"teams"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Step 3: Send & Accept Invitations",
+					"item": [
+						{
+							"name": "Player 1 invites Player 2",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"team_id\": 1,\n  \"inviter_id\": 1,\n  \"invitee_id\": 2\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/invitations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"invitations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Player 3 invites Player 4",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"team_id\": 3,\n  \"inviter_id\": 3,\n  \"invitee_id\": 4\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/invitations",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"invitations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Player 2 accepts invitation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"response\": \"accepted\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/invitations/1/respond",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"invitations",
+										"1",
+										"respond"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Player 4 accepts invitation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"response\": \"accepted\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/invitations/2/respond",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"invitations",
+										"2",
+										"respond"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Step 4: Generate a Match & Simulate Gameplay",
+					"item": [
+						{
+							"name": "Create Match (Team 1 vs Team 3)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"team_a_id\": 1,\n  \"team_b_id\": 3,\n  \"score_team_a\": 0,\n  \"score_team_b\": 0,\n  \"match_date\": \"2025-02-22T10:00:00Z\",\n  \"start_time\": \"2025-02-22T10:00:00Z\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/matches",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"matches"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Simulate Goal Update - Goal by Player 1",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"match_id\": 1,\n  \"player_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/goals",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"goals"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Simulate Goal Update - Goal by Player 2",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"match_id\": 1,\n  \"player_id\": 2\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/goals",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"goals"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Finish Match (set end_time)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"end_time\": \"2025-02-22T10:45:00Z\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/matches/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"matches",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Step 5: Get Final Standings & Brackets",
+					"item": [
+						{
+							"name": "Get Tournament Standings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/standings",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"standings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Tournament Brackets",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/brackets",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"brackets"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "refresh_token",
+			"value": "PLACEHOLDER_REFRESH_TOKEN"
+		}
+	]
+}
