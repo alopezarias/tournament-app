@@ -2,37 +2,50 @@
 -- CREACIÓN DE TABLAS
 -- ========================
 
--- Tabla de Users
+-- Tabla de Users (para autenticación)
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL, -- almacenaremos el hash de la contraseña
+    password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Teams (con campo de imagen en base64, llamado "image")
+-- Tabla de Teams
 CREATE TABLE teams (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    image TEXT, -- Imagen en formato base64
+    image TEXT,
+    is_closed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Players (con campo de imagen en base64, llamado "image")
+-- Tabla de Players (con notifications_enabled; team_id inicialmente NULL)
 CREATE TABLE players (
     id SERIAL PRIMARY KEY,
     user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    team_id INT REFERENCES teams(id) ON DELETE CASCADE,
+    team_id INT REFERENCES teams(id) ON DELETE SET NULL,
     username VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
-    image TEXT, -- Imagen en formato base64
+    image TEXT,
+    notifications_enabled BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Matches
+-- Tabla de Invitations
+CREATE TABLE invitations (
+    id SERIAL PRIMARY KEY,
+    team_id INT REFERENCES teams(id) ON DELETE CASCADE,
+    inviter_id INT REFERENCES players(id) ON DELETE CASCADE,
+    invitee_id INT REFERENCES players(id) ON DELETE CASCADE,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Matches (con start_time, end_time, duration y status)
 CREATE TABLE matches (
     id SERIAL PRIMARY KEY,
     team_a_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
@@ -40,29 +53,25 @@ CREATE TABLE matches (
     score_team_a INT DEFAULT 0,
     score_team_b INT DEFAULT 0,
     match_date TIMESTAMP,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    duration INTERVAL,
+    status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT different_teams CHECK (team_a_id <> team_b_id)
 );
 
--- Tabla de Goals (sin campo minute_scored)
+-- Tabla de Goals (con sent_at)
 CREATE TABLE goals (
     id SERIAL PRIMARY KEY,
     match_id INT NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
     player_id INT REFERENCES players(id) ON DELETE SET NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Refresh Tokens (opcional)
-CREATE TABLE refresh_tokens (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL
-);
-
--- Tabla de Tournament Standings (opcional)
+-- Tabla de Tournament Standings
 CREATE TABLE tournament_standings (
     team_id INT PRIMARY KEY REFERENCES teams(id) ON DELETE CASCADE,
     wins INT DEFAULT 0,
@@ -77,20 +86,56 @@ CREATE TABLE tournament_standings (
 -- Tabla de Tournament Bracket
 CREATE TABLE tournament_bracket (
     id SERIAL PRIMARY KEY,
-    phase VARCHAR(50) NOT NULL, -- Ej.: 'Octavos', 'Cuartos', 'Semifinal', 'Final'
-    match_id INT REFERENCES matches(id) ON DELETE CASCADE, -- Partido correspondiente en esa fase
+    phase VARCHAR(50) NOT NULL, -- Ej.: 'Cuartos', 'Semifinal', 'Final'
+    match_id INT REFERENCES matches(id) ON DELETE CASCADE,
     team_a_id INT REFERENCES teams(id) ON DELETE CASCADE,
     team_b_id INT REFERENCES teams(id) ON DELETE CASCADE,
-    winner_team_id INT REFERENCES teams(id) ON DELETE SET NULL, -- Se llena cuando se defina un ganador
+    winner_team_id INT REFERENCES teams(id) ON DELETE SET NULL,
     scheduled_date TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT different_teams_bracket CHECK (team_a_id <> team_b_id)
 );
 
+-- Tabla de Notifications
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    player_id INT REFERENCES players(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ========================
 -- FUNCIONES Y TRIGGERS
 -- ========================
+
+-- Trigger function para actualizar status y duración de un partido
+CREATE OR REPLACE FUNCTION update_match_status_and_duration()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.start_time IS NULL AND NEW.end_time IS NULL THEN
+        NEW.status := 'pending';
+        NEW.duration := NULL;
+    ELSIF NEW.start_time IS NOT NULL AND NEW.end_time IS NULL THEN
+        NEW.status := 'in_progress';
+        NEW.duration := NULL;
+    ELSIF NEW.start_time IS NOT NULL AND NEW.end_time IS NOT NULL THEN
+        NEW.status := 'completed';
+        NEW.duration := NEW.end_time - NEW.start_time;
+    ELSE
+        NEW.status := 'pending';
+        NEW.duration := NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para matches (antes de INSERT o UPDATE)
+CREATE TRIGGER trg_update_match_status
+BEFORE INSERT OR UPDATE ON matches
+FOR EACH ROW
+EXECUTE FUNCTION update_match_status_and_duration();
 
 -- Función para recalcular las estadísticas de un equipo basado en los partidos disputados
 CREATE OR REPLACE FUNCTION recalc_standings(p_team_id INT)

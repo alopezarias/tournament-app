@@ -1,5 +1,4 @@
-# backend/app/models/match.py
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, CheckConstraint
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, CheckConstraint, Interval, String
 from sqlalchemy.sql import func
 from app.db.base_class import Base
 
@@ -12,6 +11,10 @@ class Match(Base):
     score_team_a = Column(Integer, default=0)
     score_team_b = Column(Integer, default=0)
     match_date = Column(DateTime)
+    start_time = Column(DateTime, nullable=True)
+    end_time = Column(DateTime, nullable=True)
+    duration = Column(Interval, nullable=True)
+    status = Column(String(20), default='pending')  # 'pending', 'in_progress', 'completed'
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

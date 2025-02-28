@@ -1,4 +1,3 @@
-# backend/app/services/team_service.py
 from sqlalchemy.orm import Session
 from app.models.team import Team
 from app.schemas.team import TeamCreate, TeamUpdate
@@ -10,6 +9,7 @@ def get_teams(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Team).offset(skip).limit(limit).all()
 
 def create_team(db: Session, team: TeamCreate):
+    # Se puede implementar la restricción de que un jugador solo cree 1 equipo desde la lógica de negocio.
     db_team = Team(**team.dict())
     db.add(db_team)
     db.commit()

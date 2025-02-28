@@ -1,4 +1,3 @@
-# backend/app/services/tournament_bracket_service.py
 from sqlalchemy.orm import Session
 from app.models.tournament_bracket import TournamentBracket
 from app.schemas.tournament_bracket import TournamentBracketCreate, TournamentBracketUpdate

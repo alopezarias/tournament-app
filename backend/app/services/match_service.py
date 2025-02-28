@@ -1,4 +1,3 @@
-# backend/app/services/match_service.py
 from sqlalchemy.orm import Session
 from app.models.match import Match
 from app.schemas.match import MatchCreate, MatchUpdate

@@ -1,4 +1,3 @@
-# backend/app/services/goal_service.py
 from sqlalchemy.orm import Session
 from app.models.goal import Goal
 from app.schemas.goal import GoalCreate

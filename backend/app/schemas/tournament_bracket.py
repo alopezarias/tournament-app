@@ -1,25 +1,25 @@
-# backend/app/schemas/tournament_bracket.py
 from datetime import datetime
 from pydantic import BaseModel
+from typing import Optional
 
 class TournamentBracketBase(BaseModel):
     phase: str
-    match_id: int | None = None
+    match_id: Optional[int] = None
     team_a_id: int
     team_b_id: int
-    winner_team_id: int | None = None
-    scheduled_date: datetime | None = None
+    winner_team_id: Optional[int] = None
+    scheduled_date: Optional[datetime] = None
 
 class TournamentBracketCreate(TournamentBracketBase):
     pass
 
 class TournamentBracketUpdate(BaseModel):
-    phase: str | None = None
-    match_id: int | None = None
-    team_a_id: int | None = None
-    team_b_id: int | None = None
-    winner_team_id: int | None = None
-    scheduled_date: datetime | None = None
+    phase: Optional[str] = None
+    match_id: Optional[int] = None
+    team_a_id: Optional[int] = None
+    team_b_id: Optional[int] = None
+    winner_team_id: Optional[int] = None
+    scheduled_date: Optional[datetime] = None
 
 class TournamentBracketOut(TournamentBracketBase):
     id: int

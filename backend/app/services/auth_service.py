@@ -1,4 +1,3 @@
-# backend/app/services/auth_service.py
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.player import Player
@@ -15,26 +14,27 @@ def get_user_by_email(db: Session, email: str):
 
 
 def create_user_and_player(db: Session, user_data: UserCreate, player_data: PlayerCreate):
-    # Verificar que el email y el username sean únicos
+    # Verifica que el email y el username sean únicos
     if get_user_by_email(db, user_data.email):
         raise ValueError("El email ya está registrado.")
     if db.query(Player).filter(Player.username == player_data.username).first():
         raise ValueError("El username ya está en uso.")
 
-    # Crear el usuario para autenticación
+    # Crear el usuario (para autenticación)
     hashed_password = pwd_context.hash(user_data.password)
     db_user = User(email=user_data.email, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
 
-    # Crear el jugador asociado
+    # Crear el jugador asociado (team_id se puede dejar en None)
     db_player = Player(
         user_id=db_user.id,
-        team_id=player_data.team_id,
+        team_id=player_data.team_id,  # Inicialmente, puede ser None
         username=player_data.username,
         name=player_data.name,
-        image=player_data.image
+        image=player_data.image,
+        notifications_enabled=True  # Por defecto, se habilitan
     )
     db.add(db_player)
     db.commit()

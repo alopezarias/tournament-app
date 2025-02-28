@@ -1,10 +1,10 @@
-# backend/app/schemas/register.py
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
-    team_id: int
+    team_id: Optional[int] = None
     username: str
     name: str
-    image: str = None
+    image: Optional[str] = None

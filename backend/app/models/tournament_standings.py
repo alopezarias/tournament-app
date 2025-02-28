@@ -1,4 +1,3 @@
-# backend/app/models/tournament_standings.py
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from app.db.base_class import Base
