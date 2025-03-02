@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
 from app.controllers.auth_controller import router as auth_router
 from app.controllers.team_controller import router as team_router
 from app.controllers.player_controller import router as player_router
@@ -20,6 +22,23 @@ app.include_router(invitation_router, prefix="/invitations", tags=["invitations"
 app.include_router(standings_router, prefix="/standings", tags=["standings"])
 app.include_router(bracket_router, prefix="/brackets", tags=["brackets"])
 app.include_router(profile_router, prefix="/profile", tags=["profile"])
+
+# Configura los orígenes permitidos. Puedes especificar la URL de tu frontend.
+origins = [
+    "http://localhost",
+    "http://localhost:5173",  # Ejemplo: si tu frontend corre en este puerto
+    "http://127.0.0.1:3000",
+    # Agrega aquí otros orígenes permitidos
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # También puedes usar ["*"] para permitir todo, pero no es lo ideal en producción.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def root():
